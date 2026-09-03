@@ -48,8 +48,58 @@ const createEquipment = async (req, res) => {
     }
 };
 
+// Update equipment
+const updateEquipment = async (req, res) => {
+    try {
+        const equipment = await Equipment.findByIdAndUpdate(
+            req.params.id,
+            req.body,
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!equipment) {
+            return res.status(404).json({
+                message: "Equipment not found"
+            });
+        }
+
+        res.status(200).json(equipment);
+    } catch (error) {
+        res.status(400).json({
+            message: "Failed to update equipment",
+            error: error.message
+        });
+    }
+};
+// Delete equipment
+const deleteEquipment = async (req, res) => {
+    try {
+        const equipment = await Equipment.findByIdAndDelete(req.params.id);
+
+        if (!equipment) {
+            return res.status(404).json({
+                message: "Equipment not found"
+            });
+        }
+
+        res.status(200).json({
+            message: "Equipment deleted successfully",
+            equipment
+        });
+    } catch (error) {
+        res.status(400).json({
+            message: "Failed to delete equipment",
+            error: error.message
+        });
+    }
+};
 module.exports = {
     getAllEquipment,
     getEquipmentById,
-    createEquipment
+    createEquipment,
+    updateEquipment,
+    deleteEquipment
 };
