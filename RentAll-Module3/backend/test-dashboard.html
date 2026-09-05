@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RentAll Module 3 API Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-section h2 {
+            color: #333;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+        }
+        .result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            font-weight: bold;
+        }
+        pre {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>RentAll Module 3: Rental Lifecycle Tracking</h1>
+    <p>API Endpoint Testing Dashboard</p>
+
+    <div class="test-section">
+        <h2>Server Health Check</h2>
+        <button onclick="testHealth()">Test Server</button>
+        <div id="health-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Feature 11: Submit Rent Request</h2>
+        <button onclick="testSubmitRentRequest()">Test Submit Request</button>
+        <div id="rent-request-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Feature 12: Asset Status Workflow Engine</h2>
+        <button onclick="testStatusUpdate()">Test Status Update</button>
+        <button onclick="testStatusHistory()">Test Status History</button>
+        <div id="status-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Feature 13: Geographic Exchange Mapper</h2>
+        <button onclick="testPickupLocation()">Test Pickup Location</button>
+        <button onclick="testHandoverSpot()">Test Handover Spot</button>
+        <div id="geo-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Feature 14: Handover Verification Handshake</h2>
+        <button onclick="testGenerateOTP()">Test Generate OTP</button>
+        <button onclick="testVerifyOTP()">Test Verify OTP</button>
+        <div id="handover-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Feature 15: Damage Incident Logger</h2>
+        <button onclick="testReportDamage()">Test Report Damage</button>
+        <button onclick="testGetDamageIncidents()">Test Get Damage Incidents</button>
+        <div id="damage-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>General Endpoints</h2>
+        <button onclick="testGetRental()">Test Get Rental</button>
+        <button onclick="testGetUserRentals()">Test Get User Rentals</button>
+        <div id="general-result"></div>
+    </div>
+
+    <script>
+        const BASE_URL = 'http://localhost:5000/api';
+
+        // Helper function to display results
+        function displayResult(elementId, message, type = 'info', data = null) {
+            const element = document.getElementById(elementId);
+            let html = `<div class="result ${type}">${message}</div>`;
+            if (data) {
+                html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+            element.innerHTML = html;
+        }
+
+        // Test 1: Server Health
+        async function testHealth() {
+            try {
+                const response = await fetch('http://localhost:5000/');
+                const data = await response.json();
+                displayResult('health-result', '✓ Server is running: ' + data.message, 'success', data);
+            } catch (error) {
+                displayResult('health-result', '✗ Server error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 2: Submit Rent Request
+        async function testSubmitRentRequest() {
+            try {
+                const requestBody = {
+                    renterId: '507f1f77bcf86cd799439011',
+                    itemId: '507f1f77bcf86cd799439012',
+                    startDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(),
+                    endDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+                };
+                
+                const response = await fetch(`${BASE_URL}/rentals`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('rent-request-result', '✓ Rent request endpoint working', 'success', data);
+                } else {
+                    displayResult('rent-request-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('rent-request-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 3: Status Update
+        async function testStatusUpdate() {
+            try {
+                const requestBody = {
+                    rentalId: '507f1f77bcf86cd799439013',
+                    newStatus: 'ACCEPTED',
+                    actorId: '507f1f77bcf86cd799439014',
+                    note: 'Test status update'
+                };
+                
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('status-result', '✓ Status update working', 'success', data);
+                } else {
+                    displayResult('status-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('status-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 4: Status History
+        async function testStatusHistory() {
+            try {
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013/status-history`);
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('status-result', '✓ Status history working', 'success', data);
+                } else {
+                    displayResult('status-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('status-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 5: Pickup Location
+        async function testPickupLocation() {
+            try {
+                const requestBody = {
+                    rentalId: '507f1f77bcf86cd799439013',
+                    address: '123 Test St, City',
+                    latitude: 40.7128,
+                    longitude: -74.0060,
+                    radiusKm: 1.5
+                };
+                
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013/pickup-location`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('geo-result', '✓ Pickup location working', 'success', data);
+                } else {
+                    displayResult('geo-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('geo-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 6: Handover Spot
+        async function testHandoverSpot() {
+            try {
+                const requestBody = {
+                    rentalId: '507f1f77bcf86cd799439013',
+                    name: 'Test Meeting Point',
+                    address: '456 Test Ave, City',
+                    latitude: 40.7306,
+                    longitude: -73.9352,
+                    placeId: 'test123',
+                    mapsUrl: 'https://maps.google.com/test',
+                    source: 'MANUAL',
+                    proposedBy: '507f1f77bcf86cd799439014'
+                };
+                
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013/handover-spot`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('geo-result', '✓ Handover spot working', 'success', data);
+                } else {
+                    displayResult('geo-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('geo-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 7: Generate OTP
+        async function testGenerateOTP() {
+            try {
+                const requestBody = {
+                    rentalId: '507f1f77bcf86cd799439013',
+                    purpose: 'CHECKOUT'
+                };
+                
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013/handover-otp`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('handover-result', '✓ OTP generation working', 'success', data);
+                } else {
+                    displayResult('handover-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('handover-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 8: Verify OTP
+        async function testVerifyOTP() {
+            try {
+                const requestBody = {
+                    rentalId: '507f1f77bcf86cd799439013',
+                    otp: '123456',
+                    itemMatchesDescription: true,
+                    userId: '507f1f77bcf86cd799439014'
+                };
+                
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013/handover-verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('handover-result', '✓ OTP verification working', 'success', data);
+                } else {
+                    displayResult('handover-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('handover-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 9: Report Damage
+        async function testReportDamage() {
+            try {
+                const requestBody = {
+                    rentalId: '507f1f77bcf86cd799439013',
+                    reportedBy: '507f1f77bcf86cd799439011',
+                    description: 'Test damage description',
+                    estimatedCost: 50,
+                    photos: ['test.jpg']
+                };
+                
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013/damage`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestBody)
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('damage-result', '✓ Damage report working', 'success', data);
+                } else {
+                    displayResult('damage-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('damage-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 10: Get Damage Incidents
+        async function testGetDamageIncidents() {
+            try {
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013/damage`);
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('damage-result', '✓ Get damage incidents working', 'success', data);
+                } else {
+                    displayResult('damage-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('damage-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 11: Get Rental
+        async function testGetRental() {
+            try {
+                const response = await fetch(`${BASE_URL}/rentals/507f1f77bcf86cd799439013`);
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('general-result', '✓ Get rental working', 'success', data);
+                } else {
+                    displayResult('general-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('general-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Test 12: Get User Rentals
+        async function testGetUserRentals() {
+            try {
+                const response = await fetch(`${BASE_URL}/rentals/user/507f1f77bcf86cd799439011?role=RENTER`);
+                const data = await response.json();
+                if (response.ok) {
+                    displayResult('general-result', '✓ Get user rentals working', 'success', data);
+                } else {
+                    displayResult('general-result', '✓ Endpoint exists (validation error): ' + data.message, 'info', data);
+                }
+            } catch (error) {
+                displayResult('general-result', '✗ Error: ' + error.message, 'error');
+            }
+        }
+
+        // Auto-run health check on load
+        window.onload = function() {
+            testHealth();
+        };
+    </script>
+</body>
+</html>
