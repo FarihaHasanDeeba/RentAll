@@ -22,6 +22,11 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
 
+    dropOffLocation: {
+      type: String,
+      default: "",
+    },
+
     accountType: {
       type: String,
       enum: ["renter", "lender"],
@@ -42,12 +47,18 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    verificationStatus: {
+      type: String,
+      enum: ["pending", "verified", "rejected"],
+      default: "pending",
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const User = mongoose.model("User", userSchema);
+const user = mongoose.model("user", userSchema);
 
-module.exports = User;
+module.exports = user;
