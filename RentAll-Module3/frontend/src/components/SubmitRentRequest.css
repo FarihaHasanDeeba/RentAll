@@ -1,0 +1,80 @@
+.submit-request {
+  padding: 20px;
+}
+
+.submit-request h1 {
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  color: #6c757d;
+  margin-bottom: 30px;
+  font-size: 1.1rem;
+}
+
+.request-form {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  margin-bottom: 30px;
+}
+
+.cost-summary {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.cost-summary h3 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.cost-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.cost-row:last-child {
+  border-bottom: none;
+}
+
+.cost-row.total {
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 10px;
+  padding-top: 15px;
+  border-top: 2px solid #007bff;
+}
+
+.cost-highlight {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.info-box {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-box h3 {
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.info-box ol {
+  padding-left: 20px;
+  line-height: 1.8;
+  color: #495057;
+}
+
+.info-box li {
+  margin-bottom: 10px;
+}
